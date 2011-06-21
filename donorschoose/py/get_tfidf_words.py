@@ -19,12 +19,13 @@ from optparse import OptionParser
 
 from tfidf import TFIDF
 
-def wordcount(filename, text):
+def wordcount(filename, text, id):
   resources = open('../data/resources.csv')
   resources.readline() # header
   wordcount = TFIDF()
-  for line in csv.reader(resources):
-    wordcount.process(text(line).lower())
+  for id, lines in groupby(csv.reader(resources), id):
+    maintext = ' '.join(text(line).lower() for line in lines)
+    wordcount.process(maintext)
   wordcount.done()
 
   out = open(filename, 'w')
@@ -77,7 +78,7 @@ if __name__ == '__main__':
     exit(0);
 
   if options.gen is None:
-    wordcount(options.tfidf, text)
+    wordcount(options.tfidf, text, id)
   else:
     writewords(options.tfidf, options.gen, text, id)
 
