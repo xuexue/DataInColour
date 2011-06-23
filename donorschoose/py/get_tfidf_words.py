@@ -19,8 +19,8 @@ from optparse import OptionParser
 
 from tfidf import TFIDF
 
-def wordcount(filename, text, id):
-  resources = open('../data/resources.csv')
+def wordcount(filename, tfidf, text, id):
+  resources = open(filename)
   resources.readline() # header
   wordcount = TFIDF()
   for id, lines in groupby(csv.reader(resources), id):
@@ -28,18 +28,18 @@ def wordcount(filename, text, id):
     wordcount.process(maintext)
   wordcount.done()
 
-  out = open(filename, 'w')
+  out = open(tfidf, 'w')
   for word, tfidf in wordcount.highest(200):
     out.write('%s\t%f\n' % (word, tfidf))
 
-def writewords(tfidf, outfile, text, id):
+def writewords(filename, tfidf, outfile, text, id):
   words = []
   for line in open(tfidf):
     words.append(line.split('\t')[0])
   words_set = frozenset(words)
 
   outfile = open(outfile, 'w')
-  resources = open('../data/resources.csv')
+  resources = open(filename)
   resources.readline() # header
   outfile.write('\t'.join(words) + '\n')
   for id, lines in groupby(csv.reader(resources), id):
@@ -70,15 +70,17 @@ if __name__ == '__main__':
   if options.file == 'resource':
     text = lambda line: line[5]
     id = lambda line: line[1]
+    file = '../data/resources.csv'
   elif options.file == 'essay':
     text = lambda line: ' '.join(line[3:10])
     id = lambda line: line[0]
+    file = '../data/essays.csv'
   else:
     print "Unknown file type!"
     exit(0);
 
   if options.gen is None:
-    wordcount(options.tfidf, text, id)
+    wordcount(file, options.tfidf, text, id)
   else:
-    writewords(options.tfidf, options.gen, text, id)
+    writewords(file, options.tfidf, options.gen, text, id)
 
