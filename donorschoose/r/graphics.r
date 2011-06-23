@@ -1,4 +1,4 @@
-#setwd('/User/xuexue/dataincolour/donorschoose/r/')
+setwd('/Users/xuexue/dataincolour/donorschoose/r/')
 library(ggplot2)
 library(RColorBrewer)
 source('read.in.projects.r')
@@ -31,14 +31,14 @@ tp_plot <- function(dim, var, keep=c(), title="", labs=c()) {
   }
   return(ggplot(data=x ,#[x$col!="Others",],
                 aes(x=dim, y=value, group=var, color=col)) +
-    geom_line(size=1) + geom_point(size=2) +
-    opts(title="") +
-    labs(x=title, y="", colour="") + 
+    geom_line(size=1) + geom_point(size=2) +theme_bw() +
+    opts(title=title) + 
+    labs(x=NULL, y=NULL, colour="") + 
     scale_y_continuous(formatter="percent")+
     scale_color_manual(values=colors, limits=limits_ordered,
                       breaks=limits_ordered, labels=labs)+ 
-    opts(plot.margin=unit(c(0,1,0,0), "lines")) + 
     opts(legend.direction="horizontal", legend.position="bottom",
+         legend.justification="center",
          legend.key.size=unit(c(1,1),"lines")))
 }
 
@@ -58,7 +58,7 @@ school_plot
 donations <- data.frame(donation=tapply(projects$total_donations,
                                         projects$year, sum)/1000000)
 donations$year <- as.numeric(rownames(donations))
-donations_plot <- (ggplot(data=donations) +
+donations_plot <- (ggplot(data=donations) + theme_bw() +
   geom_line(aes(x=year, y=donation), size=1.5, color='steelblue') + 
   geom_point(aes(x=year, y=donation), size=3, color='steelblue') + 
   opts(title = "Donation Amount ($million)") + xlab("") +
@@ -69,7 +69,7 @@ donations_plot <- (ggplot(data=donations) +
 donors <- data.frame(donors=tapply(projects$num_donors,
                                    projects$year, sum)/1000)
 donors$year <- as.numeric(rownames(donors))
-donors_plot <- (ggplot(data=donors) +
+donors_plot <- (ggplot(data=donors) + theme_bw() +
   geom_line(aes(x=year, y=donors), size=1.5, color='purple') + 
   geom_point(aes(x=year, y=donors), size=3, color='purple') + 
   opts(title = "Donations (thousand)") + xlab("") +
@@ -80,7 +80,7 @@ donors_plot <- (ggplot(data=donors) +
 nproj <- data.frame(project = table(projects$year)/1000)
 colnames(nproj) <- c("year", "project")
 nproj$year <- as.numeric(as.character(nproj$year))
-nproj_plot <- (ggplot(data=nproj) +
+nproj_plot <- (ggplot(data=nproj) + theme_bw() +
   geom_line(aes(x=year, y=project), size=1.5, color='darkgreen') + 
   geom_point(aes(x=year, y=project), size=3, color='darkgreen') + 
   scale_y_continuous(limit=c(0,90), expand=c(0,0)) +
@@ -92,7 +92,7 @@ arrange(nproj_plot, donors_plot, donations_plot, ncol=3)
 
 ########## [[DONATION PER PROJECT]]
 ndon <- data.frame(don=tapply(projects$num_donors, projects$year, mean), year=2004:2010)
-ndon_plot <- (ggplot(data=ndon) +
+ndon_plot <- (ggplot(data=ndon) + 
   geom_line(aes(x=year, y=don), size=1.5, color='red')+
   geom_point(aes(x=year, y=don), size=3, color='red')+
   opts(title="Donors per project") + xlab("") + 
