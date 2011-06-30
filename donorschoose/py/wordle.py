@@ -16,17 +16,19 @@ from optparse import OptionParser
 
 
 # read in the list of "good" projects
-def main(area, type, frac, file):
+def main(area, type, pref, frac, file):
   projects = open('../data/projects.csv')
   projects.readline() # header
   good_projects = []
 
   allarea = 'all' in area
   alltype = 'all' in type
-
+  allpref = 'all' in pref
+  
   for line in csv.reader(projects):
     if (line[date_posted].startswith("2010") and 
         (allarea or line[primary_focus_area] in area) and 
+        (allpref or line[teacher_prefix] in pref) and 
         (alltype or line[resource_type] in type)):
       good_projects.append(line[_projectid])
   good_projects = frozenset(good_projects)
@@ -59,7 +61,10 @@ if __name__ == '__main__':
   parser.add_option('--type', dest='type', default='all',
                     help='resource type (replace space with _, separate'
                          'by commas)')
-  parser.add_option('--subset', dest='subset', default=1,
+  parser.add_option('--pref', dest='pref', default='all',
+                    help='teacher prefix (replace space with _, separate'
+                         'by commas)')
+  parser.add_option('--subset', dest='subset', default=1, type='float',
                     help='fraction to take')
 
   if len(sys.argv) == 1:
@@ -69,5 +74,6 @@ if __name__ == '__main__':
 
   main(options.area.replace('_', ' ').split(','),
        options.type.replace('_', ' ').split(','),
+       options.pref.replace('_', ' ').split(','),
        options.subset,
        options.file)
