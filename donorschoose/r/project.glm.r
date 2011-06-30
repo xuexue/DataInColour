@@ -154,7 +154,7 @@ plot.est <- function(ns, names, var.name, proj.name, labels=c()) {
     opts(panel.margin=unit(c(0,0,0,0), "line")) +
     geom_bar(aes(x=val, y=est, fill=est)) + 
     scale_x_discrete(limits=df$val, breaks=c(""), labels=c("")) +
-    scale_y_continuous(formatter="percent", limits=c(-.35,.3)) +
+    scale_y_continuous(formatter="percent", limits=c(-.1,.1)) +
     xlab('') + ylab('') + opts(legend.position="none") +
     opts(title=var.name) + coord_flip() + 
     scale_fill_gradient2(low="red", mid="grey", high="steelblue") +
@@ -169,7 +169,8 @@ resource <- plot.est(c(47:51),
                      "Resource Type", "resource_type")
 
 #### teacher prefix
-prefix <- plot.est(c(15,16), c("Mr.", "Mrs.", "Ms."), "Teacher Prefix",
+prefix <- plot.est(c(15,16), c("Mr.", "Mrs.", "Ms."),
+                   "Effect of Teacher Prefix on Odds of Project Completion",
                    "teacher_prefix")
 
 

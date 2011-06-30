@@ -147,13 +147,6 @@ poverty <- tp_plot(projects$year, projects$poverty_level,
                     "School Poverty Level by Year",
                     c("High", "Low", "Minimal"))
 
-########## [[PREFIX ]]
-teacher_subset = (projects$teacher_prefix != '' & 
-                  projects$teacher_prefix != "Mr. & Mrs.")
-teacher <- (tp_plot(projects$year,
-                    factor(projects$teacher_prefix),
-                    c("Mr.","Mrs.", "Ms."),
-                    "Teacher Prefix by Year"))
 
 ########## [[SUBJECT]]
 subject <- (tp_plot(projects$year, projects$primary_focus_area, 
@@ -185,23 +178,7 @@ y.m <- melt(y)
   scale_y_discrete(name="", expand = c(0,0)) +
   opts(legend.position="none"))
 
-y <- tapply(projects$year<"2011",
-            list(projects$teacher_prefix projects$resource_type),
-            sum, simplify=T)[,1:4]
-y.m <- melt(y)
-(ggplot(data=y.m) + geom_tile(aes(x=X2, y=X1, fill=value)) +
-  scale_fill_gradient(low="white", high="steelblue") +
-  scale_x_discrete(expand = c(0,0)) + scale_y_discrete(expand = c(0,0)))
-
-y <- tapply(projects$funding_status=="completed",
-            list(projects$teacher_prefix, projects$resource_type),
-            mean, simplify=T)[c(1,5,6),1:4]
-y.m <- melt(y)
-(ggplot(data=y.m) + geom_tile(aes(x=X2, y=X1, fill=value)) +
-  scale_fill_gradient(low="white", high="steelblue") +
-  scale_x_discrete(expand = c(0,0)) + scale_y_discrete(expand = c(0,0)))
-
-  
+# PROJECT GROWTH
 y_before <- tapply(projects$year=="2005",
     list(projects$primary_focus_area, projects$resource_type),
     sum, simplify=T)[,1:4] / sum(projects$year == "2005")
