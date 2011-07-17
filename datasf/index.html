@@ -1,0 +1,58 @@
+<html>
+  <head>
+    <title>DataSF Tags</title>
+    <script type="text/javascript" src="protovis.js"></script>
+    <script type="text/javascript" src="datasf.js"></script>
+    <style type="text/css">
+
+body {
+  margin: 0;
+}
+</style>
+
+</head>
+<body>
+<div style="float:left; font-family:arial; font-size:14; width:800px">
+<h4>DataSF Data Set Tags</h4>
+Size represent number of data sets having a particular tag.
+Tags are connected if data sets contain both tags.
+Only tags with more than one data set are shown.
+</div>
+
+<div>
+<script type="text/javascript+protovis">
+var w = document.body.clientWidth,
+h = document.body.clientHeight-100,
+colors = pv.Colors.category19();
+var vis = new pv.Panel()
+                .width(w)
+                .height(h)
+                .fillStyle("white")
+                .event("mousewheel", pv.Behavior.zoom());
+var force = vis.add(pv.Layout.Force)
+               .springConstant(0.01)
+               .springDamping(0.0)
+               .bound(1)
+               .nodes(datasf.nodes)
+               .links(datasf.links);
+force.link.add(pv.Line);
+force.node.add(pv.Dot)
+          .size(function(d) (d.linkDegree*2 + 220) * Math.pow(this.scale, -1.5))
+          .fillStyle(function(d) d.fix ? "brown" : colors(d.group))
+          .strokeStyle(function() this.fillStyle().darker())
+          .lineWidth(1)
+          .title(function(d) d.nodeName)
+          .event("mousedown", pv.Behavior.drag())
+          .event("drag", force);
+force.node.add(pv.Label)
+          .text(function(d) d.nodeName)
+          .event("mousedown", pv.Behavior.drag())
+          .event("drag", force);
+vis.render();
+
+</script>
+</div>
+
+</body>
+</html>
+
