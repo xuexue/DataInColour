@@ -37,7 +37,7 @@ def wordcount(filename, ent_file, tfidf, text, id):
   wordcount.done()
 
   out = open(tfidf, 'w')
-  for word, tfidf in wordcount.highest(200):
+  for word, _, _, tfidf in wordcount.highest(200):
     out.write('%s\t%f\n' % (word, tfidf))
 
 def writewords(filename, tfidf, outfile, text, id):

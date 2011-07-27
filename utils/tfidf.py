@@ -68,9 +68,13 @@ class TFIDF:
     for token, arr in self.wc.items():
       arr[self.TFIDF] = arr[self.TF]*log(self.docs / arr[self.DF])
   def highest(self, n):
-    return [(x[0], x[1][self.TFIDF]) for x in
-            sorted(self.wc.items(),
-                   key=lambda x: x[1][self.TFIDF], reverse=True)[:n]]
+    if n == 0:
+      n = len(self.wc)
+    else:
+      n = min(n, len(self.wc))
+    return [(x[0], x[1][self.TF], x[1][self.DF], x[1][self.TFIDF])
+            for x in sorted(self.wc.items(),
+                            key=lambda x: x[1][self.TFIDF], reverse=True)[:n]]
 
 if __name__ == '__main__':
   x = TFIDF()
