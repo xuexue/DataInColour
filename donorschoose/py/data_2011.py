@@ -5,13 +5,14 @@ select data from 2011 onwards
 import csv
 
 from collections import defaultdict
+from itertools import groupby
 from string import punctuation
 from sys import argv
 
 from get_tfidf_words import get_entities
 from tfidf import TFIDF
 
-def count(district):
+def count(district, type='essays', extract_text=lambda line: ' '.join(line[3:10]), id=lambda line:line[0]):
   (_projectid,_teacher_acctid,_schoolid,school_ncesid,school_latitude,school_longitude,school_city,school_state,school_zip,school_metro,school_district,school_county,school_charter,school_magnet,school_year_round,school_nlns,school_kipp,school_charter_ready_promise,teacher_prefix,teacher_teach_for_america,teacher_ny_teaching_fellow,primary_focus_subject,primary_focus_area,secondary_focus_subject,secondary_focus_area,resource_usage,resource_type,poverty_level,grade_level,vendor_shipping_charges,sales_tax,payment_processing_charges,fulfillment_labor_materials,total_price_excluding_optional_support,total_price_including_optional_support,students_reached,used_by_future_students,total_donations,num_donors,eligible_double_your_impact_match,eligible_almost_home_match,funding_status,date_posted,date_completed,date_thank_you_packet_mailed,date_expiration) = range(46)
   proj_ids = []
   projects = open('../data/projects.%scsv' % district)
@@ -23,20 +24,20 @@ def count(district):
   projects.close()
 
   wordcount = TFIDF(get_entities(ent_file))
-  essays = open('../data/essays.%scsv' % district)
+  essays = open('../data/%s.%scsv' % (type, district))
   essays.readline() # header
-  for line in csv.reader(essays):
-    if line[0] in proj_ids:
-      text = ' '.join(line[3:10]).lower()
+  for proid, lines in groupby(csv.reader(essays), id):
+    if proid in proj_ids:
+      text = ' '.join(extract_text(line) for line in lines).lower()
       wordcount.process(text)
   wordcount.done()
   essays.close()
 
-  out = open('../data/wc_%scsv' % district, 'w')
+  out = open('../data/wc_%s%scsv' % (type, district), 'w')
   for word, tf, df, tfidf in wordcount.highest(0):
     out.write('%s\t%f\t%f\t%f\n' % (word, tf, df, tfidf))
 
-def merge(files):
+def merge(files, type='essays'):
   words = {}
   for file in files[1:]:
     words[file] = defaultdict(lambda: (0,0))
@@ -46,7 +47,7 @@ def merge(files):
       words[file][word] = (float(tf), float(df))
 
   input = open(files[0])
-  outfile = open('../data/wc_merged.tsv', 'w')
+  outfile = open('../data/wc_%smerged.tsv' % type, 'w')
   for line in input:
     word, tf, df, _ = line.split('\t')
     if not any(word.endswith(x) or word.startswith(x) for x in punctuation):
@@ -56,11 +57,14 @@ def merge(files):
 if __name__ == '__main__':
   ent_file = '../data/my_entities'
   func = argv[1]
+  type = 'resources'
 
   if func == 'count':
     district = '' if len(argv) == 2 else argv[2]+'.'
-    count(district)
+    text = lambda line: line[5]
+    id = lambda line: line[1]
+    count(district, type, text, id)
   elif func == 'merge':
-    merge(['../data/wc_csv', '../data/wc_memphis.csv', '../data/wc_tampa.csv'])
+    merge(['../data/wc_csv', '../data/wc_%smemphis.csv' % type, '../data/wc_%stampa.csv' % type], type)
   
 
