@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*- 
+'''
+Get only a subset of the csv file -- only the vars that are useful
+'''
 import codecs
 import csv
 
