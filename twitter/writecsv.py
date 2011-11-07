@@ -3,6 +3,7 @@
 import codecs
 import csv
 import json
+import re
 
 infile = 'data/usrs'
 outfile = 'data/users.csv'
@@ -10,6 +11,8 @@ outfile = 'data/users.csv'
 latest_tweet = 'status'
 keys = []
 status_keys = []
+
+space_re = re.compile('\s+', re.UNICODE)
 
 # read in the first line to determine the 
 with codecs.open(infile, 'r', 'utf-8') as input:
@@ -20,7 +23,7 @@ with codecs.open(infile, 'r', 'utf-8') as input:
 
 #now doing this for real!
 outfile = csv.writer(open(outfile, 'w'))
-outfile.writerow(keys + status_keys)
+outfile.writerow(keys + ['t%s'%x for x in status_keys])
 for line in open(infile):
   usr, line = line.split('\t')
   if line.startswith('{'):
@@ -30,6 +33,7 @@ for line in open(infile):
       row += [js[latest_tweet][k] for k in status_keys]
     else:
       row += ['null']*len(status_keys)
-    row = map(lambda x: x if not isinstance(x,unicode) else x.encode('utf-8'), row)
+    row = map(lambda x: x if not (isinstance(x,unicode) or isinstance(x,str)) else space_re.sub(' ', x).encode('utf-8'), row)
+    if len(row) != 56:
+      print len(row)
     outfile.writerow(row)
-

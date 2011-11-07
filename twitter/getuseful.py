@@ -2,6 +2,12 @@
 # -*- coding: utf-8 -*- 
 '''
 Get only a subset of the csv file -- only the vars that are useful
+
+Also run 
+
+head -1 userdata.csv > sorted.csv
+grep -v  profile_use_background_image userdata.csv | sort -k2n,2 -t, >> sorted.csv
+
 '''
 import codecs
 import csv
