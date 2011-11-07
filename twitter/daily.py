@@ -25,8 +25,8 @@ dt_nonactive = defaultdict(lambda: 0) # new accnt registered but no tweet ever
 sorted = open('data/sorted.csv')
 header = sorted.readline().split(',')
 id = header.index('id')
-created_at = header.index('created_at')
-tcreated_at = header.index('tcreated_at')
+created_at = header.index('created_at')   # creation date
+tcreated_at = header.index('tcreated_at') # last tweet
 for line in csv.reader(sorted):
   dt = time.strptime(line[created_at].replace('+0000 ', ''))
   dtstr = '%04.d%02.d%02.d' % (dt.tm_year, dt.tm_mon, dt.tm_mday)
